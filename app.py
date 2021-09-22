@@ -14,35 +14,43 @@ filename = "datafiles/" + sys.argv[1]
 def ActionRequest(action):
     r =requests.get(action['options']['url'])
     storedData2 = r.text
-    # for x in r:
-    #     storedData2.append(x)
-    return storedData2
+    parse_json = json.loads(storedData2)
+    # print(parse_json['ip'])
+    return parse_json
 
 
-def urlInterpolation(url, inputdata):
-     # s_without_parens = re.sub('\(.+?\)','',url)
-    text_in_brackets = re.findall('[^{\{]+(?=}\})',url)
-    keys=[]
-    values=[]
-    for i in text_in_brackets:
-        keys.append(i.split(".")[0])
-        values.append(i.split(".")[1])
-    for value in inputdata:
-        print("value")
+# def urlInterpolation(url, inputdata):
+#      # s_without_parens = re.sub('\(.+?\)','',url)
+#     text_in_brackets = re.findall('[^{\{]+(?=}\})',url)
+#     keys=[]
+#     values=[]
+#     for i in text_in_brackets:
+#         keys.append(i.split(".")[0])
+#         values.append(i.split(".")[1])
+#     for value in inputdata:
+#         print("value")
 
 with open(filename) as json_file:
     actionsObject = json.load(json_file)
-    storedData = []
+    storedData = {}
     for action in actionsObject['actions']:
         if action['type'] == "HTTPRequestAction":
-            storedData.append(ActionRequest(action))
-            ActionRequest(action)
-            url = action['options']['url']
-            # print(storedData)
+            # actionData = {action['name']:ActionRequest(action)}
+            # storedData.append(actionData)
+            storedData[action['name']] = ActionRequest(action)
+            parse_json2 = json.dumps(storedData)
+    print(storedData['location']['ip'])
+
+        # for x in storedData:
+        #     if action['name'] == list(x)[0]:
+        #         print(x)
+# print(storedData)
+
+    # print(storedData[0]['location']['ip'])
             # r =requests.get(action['options']['url'])
             # print(r)
-            if "{{" and "}}" in url:
-                urlInterpolation(url, storedData)
-                # print(storedData)
-            else:
-                print("no interpolation")
+            # if "{{" and "}}" in url:
+            #     urlInterpolation(url, storedData)
+            #     # print(storedData)
+            # else:
+            #     print("no interpolation")
