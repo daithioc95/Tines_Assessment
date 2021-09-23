@@ -3,6 +3,8 @@ import json
 import requests
 import re
 
+# pip install responses
+
 # An Action is described in the Story file by an object with the keys type , name and options
 # A Story is executed by running its Actions in the order that they appear in the Story file. When run, 
 # each Action produces an output Event, which is then passed to the next Action as its input Event
@@ -14,27 +16,34 @@ filename = "datafiles/" + sys.argv[1]
 def requestAction(action, data):
     url = action['options']['url']
     if "{{" and "}}" in url:
-        url = urlInterpolation(url, storedData)
+        url = interpolation(url, storedData)
     r =requests.get(url)
-    storedData2 = r.text
-    parse_json = json.loads(storedData2)
-    return parse_json
+    if r.status_code == 200:
+        storedData2 = r.text
+        parse_json = json.loads(storedData2)
+        return parse_json
+    else:
+        print('Network Failure. Terminating Program')
+        sys.exit()
 
-
-def urlInterpolation(url, inputdata):
-    text_in_brackets = re.findall('[^{\{]+(?=}\})',url)
+# if value doesn't exist in stored data, 
+def interpolation(string, inputData):
+    text_in_brackets = re.findall('[^{\{]+(?=}\})',string)
     keys=[]
     values = []
     for i in text_in_brackets:
-        url = url.replace("{"+str(i)+"}",'')
+        string = string.replace("{"+str(i)+"}",'')
         keys.append(i.split("."))
     for j in range(0,len(keys)):
         temp = storedData
         for k in range(0,len(keys[j])):
-            temp=temp[keys[j][k]]
+            try:
+                temp=temp[keys[j][k]]
+            except KeyError or TypeError:
+                temp=''
         values.append(temp)
-    url = url.format(*values)
-    return url
+    output = string.format(*values)
+    return output
 
 
 with open(filename) as json_file:
@@ -44,6 +53,6 @@ with open(filename) as json_file:
         if action['type'] == "HTTPRequestAction":
             storedData[action['name']] = requestAction(action, storedData)
         if action['type'] == "PrintAction":
-            message = urlInterpolation(action['options']['message'], storedData)
+            printString = action['options']['message']
+            message = interpolation(printString, storedData)
             print(message)
-# interpolate message action
