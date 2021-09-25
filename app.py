@@ -3,12 +3,6 @@ import json
 import requests
 import re
 
-# pip install responses
-
-# An Action is described in the Story file by an object with the keys type , name and options
-# A Story is executed by running its Actions in the order that they appear in the Story file. When run, 
-# each Action produces an output Event, which is then passed to the next Action as its input Event
-# when it is run, and so on.
 
 filename = "datafiles/" + sys.argv[1]
 
@@ -45,14 +39,17 @@ def interpolation(string, inputData):
         string = string.replace("{{"+str(text_in_brackets[l])+"}}",str(values[l]))
     return string
 
-
-with open(filename) as json_file:
-    actionsObject = json.load(json_file)
-    storedData = {}
-    for action in actionsObject['actions']:
-        if action['type'] == "HTTPRequestAction":
-            storedData[action['name']] = requestAction(action, storedData)
-        if action['type'] == "PrintAction":
-            printString = action['options']['message']
-            message = interpolation(printString, storedData)
-            print(message)
+try:
+    with open(filename) as json_file:
+        actionsObject = json.load(json_file)
+        storedData = {}
+        for action in actionsObject['actions']:
+            if action['type'] == "HTTPRequestAction":
+                storedData[action['name']] = requestAction(action, storedData)
+            if action['type'] == "PrintAction":
+                printString = action['options']['message']
+                message = interpolation(printString, storedData)
+                print(message)
+except FileNotFoundError:
+    print('Invalid file name.')
+    sys.exit()
