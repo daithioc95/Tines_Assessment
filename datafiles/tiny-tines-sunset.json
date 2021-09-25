@@ -18,7 +18,7 @@
       "type": "PrintAction",
       "name": "print",
       "options": {
-        "message": "Sunset in {{location.peter}}, {{location.country}} is at {{sunset.results.sunset}}."
+        "message": "Sunset in {{location.city}}, {{location.country}} is at {{sunset.results.sunset}}."
       }
     }
   ]

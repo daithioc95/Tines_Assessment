@@ -4,7 +4,7 @@
       "type": "HTTPRequestAction",
       "name": "test_data",
       "options": {
-        "url": "https://coding-exercise.tines.io/webhook/160564ed1b5ea694ca19024c9a7d2889/54a35506d279294db2abac754d46685c?email=jane@example.com"
+        "url": "https://coding-exercise.tines.io/webhook/160564ed1b5ea694ca19024c9a7d2889/54a35506d279294db2abac754d46685c?email=daithioc@outlook.com"
       }
     },
     {
@@ -22,10 +22,10 @@
       }
     },
     {
-      "type": "PrintAction",
+      "type": "HTTPRequestAction",
       "name": "submit",
       "options": {
-        "message": "{{test_data.submission_url}}&data=sunset.status_{{sunset.status}}_{{test_data.date}}_{{test_data.deeply.nested.data}}_{{does.not.exist}}_{{unmatched.brackets}"
+        "url": "{{test_data.submission_url}}&data=sunset.status_{{sunset.status}}_{{test_data.date}}_{{test_data.deeply.nested.data}}_{{does.not.exist}}_{{unmatched.brackets}"
       }
     }
   ]

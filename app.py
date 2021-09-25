@@ -3,6 +3,7 @@ import json
 import requests
 import re
 
+
 # Function for HTTPRequestAction call
 def requestAction(action, data):
     url = action['options']['url']
@@ -20,29 +21,32 @@ def requestAction(action, data):
         print('Network Failure. Terminating Program')
         sys.exit()
 
+
 # Function to interpolate values to string/url
 def interpolation(string, inputData):
     # identify and store values between dounble curly braces
-    text_in_brackets = re.findall('[^{\{]+(?=}\})',string)
+    text_in_brackets = re.findall('[^{\{]+(?=}\})', string)
     keys = []
     values = []
     # loop to split values
     for i in text_in_brackets:
         keys.append(i.split("."))
     # double loop to identify and store keys values from HTTPRequest data
-    for j in range(0,len(keys)):
+    for j in range(0, len(keys)):
         temp = storedData
-        for k in range(0,len(keys[j])):
+        for k in range(0, len(keys[j])):
             # try except to store found data and store blank if key not valued
             try:
-                temp=temp[keys[j][k]]
+                temp = temp[keys[j][k]]
             except:
-                temp=''
+                temp = ''
         values.append(temp)
-    # iterate through string and replace curly braces keys with located stored values
-    for l in range(0,len(text_in_brackets)):
-        string = string.replace("{{"+str(text_in_brackets[l])+"}}",str(values[l]))
+    # iterate through string and replace curly braces keys with stored values
+    for l in range(0, len(text_in_brackets)):
+        string = string.replace(
+            "{{"+str(text_in_brackets[l])+"}}", str(values[l]))
     return string
+
 
 # locate json file from command line argument
 filename = "datafiles/" + sys.argv[1]
@@ -52,7 +56,7 @@ try:
         actionsObject = json.load(json_file)
         # object to store all HTTPRequestAction data
         storedData = {}
-        # iterate through all actions within the store and trigger function depending on action type
+        # iterate through actions to store & trigger function depending on type
         for action in actionsObject['actions']:
             if action['type'] == "HTTPRequestAction":
                 # Request data and store with actions name as value
