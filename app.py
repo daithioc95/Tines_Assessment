@@ -18,7 +18,7 @@ def requestAction(action, data):
     if "{{" and "}}" in url:
         url = interpolation(url, storedData)
     r =requests.get(url)
-    if r.status_code == 200:
+    if r.status_code == 200 or 204:
         storedData2 = r.text
         parse_json = json.loads(storedData2)
         return parse_json
@@ -32,18 +32,18 @@ def interpolation(string, inputData):
     keys=[]
     values = []
     for i in text_in_brackets:
-        string = string.replace("{"+str(i)+"}",'')
         keys.append(i.split("."))
     for j in range(0,len(keys)):
         temp = storedData
         for k in range(0,len(keys[j])):
             try:
                 temp=temp[keys[j][k]]
-            except KeyError or TypeError:
+            except:
                 temp=''
         values.append(temp)
-    output = string.format(*values)
-    return output
+    for l in range(0,len(text_in_brackets)):
+        string = string.replace("{{"+str(text_in_brackets[l])+"}}",str(values[l]))
+    return string
 
 
 with open(filename) as json_file:
